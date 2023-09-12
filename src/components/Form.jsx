@@ -21,11 +21,11 @@ function Form() {
   const [country, setCountry] = useState("");
   const [date, setDate] = useState(new Date());
   const [notes, setNotes] = useState("");
-
+console.log()
   return (
     <form className={ styles.form }>
       <div className={ styles.row }>
-        <label htmlFor="cityName">City name</label>
+        <label htmlFor="cityName">Название города</label>
         <input
           id="cityName"
           onChange={ (e) => setCityName(e.target.value) }
@@ -35,7 +35,7 @@ function Form() {
       </div>
 
       <div className={ styles.row }>
-        <label htmlFor="date">When did you go to { cityName }?</label>
+        <label htmlFor="date">Когда вы были в { cityName }?</label>
         <input
           id="date"
           onChange={ (e) => setDate(e.target.value) }
@@ -44,7 +44,7 @@ function Form() {
       </div>
 
       <div className={ styles.row }>
-        <label htmlFor="notes">Notes about your trip to { cityName }</label>
+        <label htmlFor="notes">Заметки о вашей поездке в { cityName }</label>
         <textarea
           id="notes"
           onChange={ (e) => setNotes(e.target.value) }
@@ -53,7 +53,7 @@ function Form() {
       </div>
 
       <div className={ styles.buttons }>
-        <Button type="primary">Add</Button>
+        <Button type="primary">Добавить</Button>
         <BackButtton />
 
       </div>
