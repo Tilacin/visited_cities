@@ -40,7 +40,7 @@ function City() {
       </div>
 
       <div className={ styles.row }>
-        <h6>Вы перешли в { cityName } в</h6>
+        <h6>Вы были в { cityName } в</h6>
         <p>{ formatDate(date || null) }</p>
       </div>
 
