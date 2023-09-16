@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext, useReducer } from "react";
+import { createContext, useEffect, useContext, useReducer } from "react";
 
 const BASE_URL = 'http://localhost:8000'
 
@@ -24,9 +24,24 @@ function reducer(state, action) {
                 isLoading: false,
                 cities: action.payload
             }
-        case 'cities/created':
+        case "city/loaded":
+            return { ...state, isLoading: false, currentCity: action.payload };
 
-        case 'cities/deleted':
+        case "city/created":
+            return {
+                ...state,
+                isLoading: false,
+                cities: [...state.cities, action.payload],
+                currentCity: action.payload,
+            };
+
+        case 'city/deleted':
+            return {
+                ...state,
+                isLoading: false,
+                cities: state.cities.filter((city) => city.id !== action.payload),
+                currentCity: {},
+            }
 
         case 'rejected':
             return {
@@ -41,10 +56,7 @@ function reducer(state, action) {
 }
 
 function CitiesProvider({ children }) {
-    const [{ cities, isLoading, currentCity }, dispatch] = useReducer(reducer, initialState)
-    // const [cities, setCities] = useState([])
-    // const [isLoading, setIsLoading] = useState(false)
-    // const [currentCity, setCurrentCity] = useState({})
+    const [{ cities, isLoading, currentCity, error }, dispatch] = useReducer(reducer, initialState)
 
     useEffect(function () {
         async function fetchCities() {
@@ -58,7 +70,7 @@ function CitiesProvider({ children }) {
             catch {
                 dispatch({
                     type: 'rejected',
-                    payload: "Произошла ошибка при загрузке данных...",
+                    payload: "Произошла ошибка при загрузке городов...",
                 })
             }
         }
@@ -66,23 +78,28 @@ function CitiesProvider({ children }) {
     }, [])
 
     async function getCity(id) {
+        if (Number(id) === currentCity.id) return
 
+        dispatch({ type: "loading" })
         try {
-            setIsLoading(true)
+
             const res = await fetch(`${BASE_URL}/cities/${id}`)
             const data = await res.json()
-            setCurrentCity(data)
+            dispatch({ type: "city/loaded", payload: data })
         }
         catch {
-            alert("Произошла ошибка при загрузке данных...")
-        } finally {
-            setIsLoading(false)
+            dispatch({
+                type: 'rejected',
+                payload: "Произошла ошибка при города...",
+
+            })
+
         }
     }
     async function createCity(newCity) {
-
+        dispatch({ type: "loading" })
         try {
-            setIsLoading(true)
+
             const res = await fetch(`${BASE_URL}/cities/`, {
                 method: "POST",
                 body: JSON.stringify(newCity),
@@ -91,29 +108,34 @@ function CitiesProvider({ children }) {
                 },
             })
             const data = await res.json()
-            setCities(cities => [...cities, data])
+            dispatch({ type: 'city/created', payload: data })
         }
         catch {
-            alert("Произошла ошибка при добавлении...")
-        } finally {
-            setIsLoading(false)
+            dispatch({
+                type: 'rejected',
+                payload: "Произошла ошибка при добавлении города...",
+
+            })
+
         }
     }
     async function deleteCity(id) {
-
+        dispatch({ type: "loading" })
         try {
-            setIsLoading(true)
+
             await fetch(`${BASE_URL}/cities/${id}`, {
                 method: "DELETE",
 
             })
 
-            setCities(cities => cities.filter((city) => city.id !== id))
+            dispatch({ type: 'city/deleted', payload: id })
         }
         catch {
-            alert("Произошла ошибка при удалении...")
-        } finally {
-            setIsLoading(false)
+            dispatch({
+                type: 'rejected',
+                payload: "Произошла ошибка при удалении города...",
+
+            })
         }
     }
 
@@ -123,6 +145,7 @@ function CitiesProvider({ children }) {
             cities,
             isLoading,
             currentCity,
+            error,
             getCity,
             createCity,
             deleteCity,
