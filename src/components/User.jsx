@@ -1,16 +1,17 @@
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/FakeAuthContext";
 import styles from "./User.module.css";
 
-const FAKE_USER = {
-  name: "Jack",
-  email: "jack@example.com",
-  password: "qwerty",
-  avatar: "https://i.pravatar.cc/100?u=zz",
-};
+
 
 function User() {
-  const user = FAKE_USER;
+  const {user, logout} = useAuth()
+  const naigate = useNavigate()
 
-  function handleClick() {}
+  function handleClick() {
+    logout()
+    naigate("/")
+  }
 
   return (
     <div className={styles.user}>
@@ -24,11 +25,11 @@ function User() {
 export default User;
 
 /*
-CHALLENGE
+ВЫЗОВ
 
-1) Add `AuthProvider` to `App.jsx`
-2) In the `Login.jsx` page, call `login()` from context
-3) Inside an effect, check whether `isAuthenticated === true`. If so, programatically navigate to `/app`
-4) In `User.js`, read and display logged in user from context (`user` object). Then include this component in `AppLayout.js`
-5) Handle logout button by calling `logout()` and navigating back to `/`
+1) Добавьте "AuthProvider" в "App.jsx`
+2) На странице `Login.jsx` вызовите `login()` из контекста
+3) Внутри эффекта проверьте, является ли `IsAuthenticated === true`. Если это так, программно перейдите к `/app`
+4) В `User.js `, считывает и отображает вошедшего в систему пользователя из контекста (объект `user`). Затем включите этот компонент в `AppLayout.js `
+5) Обработайте кнопку выхода из системы, вызвав `logout()' и перейдя обратно к `/`
 */
